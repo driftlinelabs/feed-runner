@@ -1,1 +1,46 @@
+name: Telegram Affiliate Bot
 
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: true
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run bot
+        timeout-minutes: 340
+        env:
+          PYTHONUNBUFFERED: '1'
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
+          SOURCE_CHANNEL: ${{ secrets.SOURCE_CHANNEL }}
+          TARGET_CHANNELS: ${{ secrets.TARGET_CHANNELS }}
+          AFFILIATE_TAG: ${{ secrets.AFFILIATE_TAG }}
+          BLOCKED_MENTIONS: ${{ secrets.BLOCKED_MENTIONS }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          SESSION_STRING: ${{ secrets.SESSION_STRING }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: ${{ secrets.GH_REPO }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AMAZON_CLIENT_ID: ${{ secrets.AMAZON_CLIENT_ID }}
+          AMAZON_CLIENT_SECRET: ${{ secrets.AMAZON_CLIENT_SECRET }}
+          USE_SHORT_LINKS: ${{ vars.USE_SHORT_LINKS }}
+        run: python affiliate_bot.py
